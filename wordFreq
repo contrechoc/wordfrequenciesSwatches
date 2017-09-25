@@ -42,7 +42,14 @@ table {
 	position: absolute;
     left: 0px;
     top: 0px;
+	   max-height: 100%;
+    max-width: 100%;
 	
+}
+
+div {
+	background-color: #DDFFDD;
+	 
 }
 
 </style>
@@ -61,7 +68,7 @@ table {
 Year of Swatches      : </TD><TD>
 <input type="text" name="year"></TD>
 </TR><TR><TD>
-Way to order ("alpha"]:</TD><TD>
+Way to order <BR>("alpha" for alphabetical]:</TD><TD>
  <input type="text" name="order"></TD>
  
  </TR><TR><TD>
@@ -82,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	$year = htmlspecialchars($_POST["year"]);
 	$alphabet = htmlspecialchars($_POST["order"]);
 }
-
+echo "<TABLE><TR><TD>";
 echo "Submitted parameters: year= ".$year."    order= ".$alphabet."<BR>";
 
 $alphabetORnumber  = 1;
@@ -93,9 +100,11 @@ if ( ($year < 2013) || ( $year > 2017)) {
 	$year = 2017;
 	echo " Showing swatches of year ".$year ."<BR><BR>";
 }
-
+echo "</TD></TR></TABLE>";
+echo "<BR>";
+echo "<TABLE><TR><TD>";
 echo " <CENTER><B>Swatches Word Count analysis ".$year."</B></CENTER>";
-
+echo "</TD></TR></TABLE>";
 wordFrequency($urlArray, $year, $alphabetORnumber );
 
 function wordFrequency($urlArray, $year, $alphabetORnumber )
@@ -207,6 +216,8 @@ $notWords = ["should", "important", "which", "References", "Description", "Techn
 "posting", "reply", "techniques", "description", "dimensions", "leave", "shown", "email", "different", "where", "using","website", "references", "inspirations"];
 $allowedWords = ["Beam", "Becca", "led", "smd", "ic", "chip", "cap", "ldr"];
 
+echo "<BR><TABLE><TR><TD>";
+
 if ( $alphabetORnumber == 1){
 	echo "<BR>";
 	echo "Most used words in alphabetical order<BR>";
@@ -216,9 +227,11 @@ if ( $alphabetORnumber == 1){
 	echo "Words in order of most used<BR>";
 	echo "<BR>";	
 }
+echo "</TD></TR></TABLE>";
+
+
 
 $wordArrayWithAuthors = [];
-
 $counterWords = 0;
 foreach($wordCount as $words => $val)
 {
@@ -258,12 +271,12 @@ foreach($wordCount as $words => $val)
 	//echo "<BR>"; 
 	}
 }
-echo "<HR>";
+ 
 
 //in number order of alphabetical order
 if ( $alphabetORnumber == 1) asort($wordArrayWithAuthors);
 
-echo "<HR>";
+ 
 		echo "<TABLE>";
 		echo "<TR><TD>nr</TD><TD><B>words<B></TD><TD>#</TD><TD>";
 echo "<B>author - links -source</TD>";
@@ -272,10 +285,10 @@ echo "</TR>";
 $counterWords = 0;
 foreach($wordArrayWithAuthors as $words)
 {
-	echo "<TD>".($counterWords++)." </TD><td bgcolor='#005500'><B>".$words[0]."</B></TD><TD>".$words[1]." </TD><td bgcolor='#005500'>".$words[2]."</TD></TR><TR>";
+	echo "<TD bgcolor='#aaffff'>".($counterWords++)." </TD><td bgcolor='#aaffaa'><B>".$words[0]."</B></TD><TD bgcolor='#aaffff'>".$words[1]." </TD><td bgcolor='#aaffaa'>".$words[2]."</TD></TR><TR>";
 }
 
-echo "</TR><TABLE>";
+echo "</TR></TABLE>";
 
 //------------------------------------titles links authors
 echo "<HR>";
