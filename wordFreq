@@ -173,7 +173,6 @@ $urlArray[$t] =  "http://".substr($html2017, $start1 ,  $start2 - $start1 );
 			$swatchTitleArray[$u] = substr($htmlArray[$u], $startSwatchTitle, $startSwatchTitleEND-$startSwatchTitle);
 			//echo $swatchTitleArray[$u] ."<BR>";
 			
-			
 			//special cases of names
 			if ($authorArray[0] == "beam" ){$authorArray[1] = ""; }
 			if ($authorArray[0] == "sasha" ){$authorArray[1] = "de Koninck"; }
@@ -182,6 +181,8 @@ $urlArray[$t] =  "http://".substr($html2017, $start1 ,  $start2 - $start1 );
 			
 			$authors[$u] = $authorArray[0]." ".$authorArray[1];
 			if ( $authors[$u]== "e-textile swatch") $authors[$u] = "Pauline Vierne";
+			if ( $authors[$u]== "contrechoc year") $authors[$u] = "Beam";
+			if ( $authors[$u]== "Martijn ten") $authors[$u] = "Martijn ten Bhömer";
 			//if ( (strpos($urlArray[$u], "bitlace")>-1) && ($year==2014) ) $authors[$u] = "Hannah Perner-Wilson";
 			
 			if ( (strpos($urlArray[$u], "bitlace")>-1)) {
@@ -219,14 +220,46 @@ arsort($wordCount);
 //$alphabetSortWords = sort( $wordCount);
 
 // Get the top 20 words
-$wordCount = array_splice($wordCount, 0, 100);
+$wordCount = array_splice($wordCount, 0, 500);
  
 // Loop through all the word count array and work out the percentage of a word appearing on the page
 $percentageCount = [];
 
-$notWords = ["should", "important", "which", "References", "Description", "Techniques", "Inspirations", "Credits", "between",
+$specialWords = ["led","stitch","strip","stitch","tarnish","textile","textiles",
+"touch","vinyl","viscose","vliesofix","weaving","fabric","thread","conductive",
+"thermochromic","battery","copper","cotton","emboridery","knitted","knitting","led","plastic","polyester","voltage","zardozi","accelerometer","adhesive","arduino","attiny","beads",
+"blackwork","binder","breadboard","board","button","capacitor","coil","color","crochet","felted",
+"fibre","optical","folded","folding","fluorescent","hotmelt","knot","metal","liquid","magnets",
+"circuit", "sensor",  "print",  "connected",   "electricity",   "machine", "light", "static", "patterns", "plated", "capacitive", "filament", 
+"piezo", "woven", "muscle", "switch",   "threads", "microcontroller", "sound", "soldering",   "needle", "laser", "sewing",  "silver", "resistor",   
+"stitches", "motif", "technique",  "paper", "programmed",  "interaction",   "current", "coin-cell", "capacitivesensor",  "pixel", "integrated",   
+"traces", "weave", "smart", "keyboard", "haptic", "ground",   "motor", "cutting", "probe", "blurrr", "movement",   "power", "files", "electrical",  
+"chain", "photochromic", "minus",   "touched", "pigments",   "makeymakey", "visual", "printing", "video", "interactive", "display", "github", 
+"bitlace", "fusible", "stick", "sensing", "source",  "technologies", "layer", "synthetic", "turkish", "serial","paillette", "fibers","resistive", 
+"scales",  "darlington", "dress", "array", "sequin", "sequins",  "digital",  "radio", "around", "crocheted", "individual", "coated", "biological", 
+"chevrette", "cells", "incorporated", "bredies", "process", "history", "normal", "sticky",  "girlfriend", "component", "individually", "interfacing",    "symbolism", "drivers", "organic", "matter", "living", "meanings",  "pepper",  "twitch", "closed", "inputs", "pressure", "combination", "disaster", "colourful", "statex", "hydrochromic", "programming", "pager",   "jacob", "script", "components", "devices",  "scratch", "lynsey", "calder", "shieldex",  "sunlight",   "white", "interface", "generated", "square", "investigate", "functional", "electronic", "varnish", "berlin", "signals", "silkscreen", "printed", "degrees", "press", "woven-signals", "emeteuz", "external",   "setup", "memory", "millis",  "electronics", "animate",   "rabbit", "indicate", "screen", "surface", "kobakant",
+"sensors", "crystal", "magnetic", "audio","constantan","yarns","piezoresistive", "energy", "bridge", "rectifier","circuits","waffle", "porcelain", 
+"pressure-sensitive", "socket","zero-waste","trembling", "pigment","patchwork",  "conductivity", "flexible","chromel", "resistance", "biocouture",
+"stereo","biodegradable", "embroidered","conductors", "aluminum", "linen","signal","amplifier", "antenna", "sustainable","rubbing", "tribo","fiber", 
+"friction", "graphical","graphite", "heat-sink", "circuitry", "heatshrink", "binding","stretch",
+"analog", "switches","resistors", "noise", "optic",  "embroidery","nichrome", "tulle", 
+"cyanotype", "grimm", "kombucha", "silicon", "non-woven", "fibres", "carbon","chainstitch", "velostat", "thermochromics","dyeing","lilypad",
+"acrylic","kupfer","bonding", "ecoflex", "sandblasting","oslon", "osram","gluing",
+"crystals","latex", "vinegar","veilshield","mycelium", "speaker", "microbiology", "sensory", "vibrating", "tactile","beaded", "bacteria", "chromic","silicone","hydrogen",
+"darning","conductive-kombucha", "crystallisation","temperature","allotropes", "amorphous","genetics",];
+
+sort($specialWords );
+
+$notWords = ["should", "important", "which", "References", "Description", "Techniques", "Inspirations", "Credits", "between","making","create","inspired",
 "Dimensions", "through", "etextile-summercamp", "other", "function", "about", "Title.", "swatch-exchange", "https", "required", "credits", "comment",
-"posting", "reply", "techniques", "description", "dimensions", "leave", "shown", "email", "different", "where", "using","website", "references", "inspirations"];
+"posting", "reply", "techniques", "description", "dimensions", "leave", "shown", "email", "different", "where", "materials","swatch","textile","layer",
+"using","website", "references", "inspirations","link","links","would","within","whole","total","these","their","start","starts","three","times","several",
+"project","invention","title","perner-wilson","material","after","giles","center","black","small","simple","photo",
+"donneaud","photo","technique","white","values","sample","pattern","diagram","applicable","piece","based","instead","picture","makes",
+"first","part","created","example","until"];
+
+sort($notWords);
+
 $allowedWords = ["Beam", "Becca", "led", "smd", "ic", "chip", "cap", "ldr"];
 
 echo "<BR><TABLE><TR  bgcolor='#bbffbb'><TD>";
@@ -290,8 +323,8 @@ foreach($wordCount as $words => $val)
 if ( $alphabetORnumber == 1) asort($wordArrayWithAuthors);
 
  
-		echo "<TABLE>";
-		echo "<TR  bgcolor='#99ff99'><TD><H4><CENTER>nr</TD><TD><B><H3><CENTER>words<B></TD><TD><H3>#</TD><TD>";
+	echo "<TABLE>";
+	echo "<TR  bgcolor='#99ff99'><TD><H4><CENTER>nr</TD><TD><B><H3><CENTER>words<B></TD><TD><H3>#</TD><TD>";
 echo "<H3><CENTER>author - links -source</TD>";
 
 echo "</TR>";
@@ -307,25 +340,61 @@ echo "</TR></TABLE>";
 echo "<HR>";
 		echo "<TABLE>";
 		echo "<TR  bgcolor='#99ff99'><TD>";
-echo "<H3><CENTER>swatch link name";
-echo "</TD><TD>";
-echo "<H3><CENTER>swatch name";
+echo "<H3><CENTER>swatch name ";
 echo "</TD><TD>";
 echo "<H3><CENTER>author";
+echo "</TD><TD>";
+echo "<H3><CENTER>e-textile tag words";
 echo "</TD></TR>";
 		
 		for ($x=0; $x< count($urlArray);$x++){
 echo "<TR><TD>";
-echo "<a href=".$urlArray[$x].">".$urlArray[$x]."</a>";
+
+
+echo "<a href=".$urlArray[$x].">".$swatchTitleArray[$x]."</a>";
 echo "</TD><TD bgcolor='#aaffaa'>";
 
-echo $swatchTitleArray[$x];
+//echo strip_tags($titleArray[$x])." "."<a href=".$urlArray[$x].">".$authors[$x]."</a>";
+echo $authors[$x];
+		
 
 echo "</TD><TD bgcolor='#aaffaa'>";
-echo strip_tags($titleArray[$x])." "."<a href=".$urlArray[$x].">".$authors[$x]."</a>";
-		}
+
+
+//echo "<a href=".$urlArray[$x].">".$urlArray[$x]."</a>";
+
+for ($h=0; $h< count($specialWords);$h++){
+	if ( strpos($htmlArray[$x],$specialWords[$h]) > -1 )
+	{
+		echo $specialWords[$h].", ";
+}
+}
+}
 echo "</TD></TR><TABLE>";
-echo "<BR><BR><HR>";
+echo "<HR>";
+echo "<BR><BR>List of Tag words used in the table (total ".count($specialWords).")<HR>";
+for ($h=0; $h< count($specialWords);$h++){
+		echo $specialWords[$h].", ";
+}
+echo "<HR>";
+echo "list of words not used as tag word list<BR>";
+foreach($wordCount as $words => $val)
+{
+	if ( in_array($words, $specialWords ) == FALSE )
+	{
+		if ( strlen($words )> 4 )
+			if ( in_array($words, $notWords  ) == FALSE )
+		echo '"'.$words.'", ';
+}
+}
+echo "<HR>";
+echo "list of words blocked by code<BR>";
+for ($h=0; $h< count($notWords
+);$h++){
+		echo $notWords[$h].", ";
+}
+
+
 }
 	
 ?>
