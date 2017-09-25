@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+ html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#content {
+    position: relative;
+    float: left;
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 30px;
+    border-radius: 10px;
+    border: 1px solid #000000;
+}
+
+img {
+    padding: 0;
+    display: block;
+    margin: 0 auto;
+    max-height: 80%;
+    max-width: 80%;
+ 
+}
+
+table {
+    padding: 10;
+    display: block;
+    margin: 0 auto;
+    max-height: 80%;
+    max-width: 80%;
+  border: 1px solid #000000;
+}
+
+#centerImageWidth {
+	padding: 0;
+	position: absolute;
+    left: 0px;
+    top: 0px;
+	
+}
+
+</style>
+</head>
+
+<body>
+<div id="centerImageWidth">
+<img src="http://etextile-summercamp.org/swatch-exchange/logos/summer-camp_corner_flip_upsidedown.jpg" width="70">
+</div>
+<img src="http://etextile-summercamp.org/swatch-exchange/logos/swatch-logo-web-2.jpg">
+<div id="content">
+<form action="wordFreq.php" method="post">
+<BR>
+<TABLE>
+<TR><TD>
+Year of Swatches      : </TD><TD>
+<input type="text" name="year"></TD>
+</TR><TR><TD>
+Way to order ("alpha"]:</TD><TD>
+ <input type="text" name="order"></TD>
+ 
+ </TR><TR><TD>
+<input type="submit">
+</TD>
+</TR></TABLE>
+</form>
+
+<BR>
+</body>
+</html>
+
+<?php
+
+$urlArray = [];
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+	$year = htmlspecialchars($_POST["year"]);
+	$alphabet = htmlspecialchars($_POST["order"]);
+}
+
+echo "Submitted parameters: year= ".$year."    order= ".$alphabet."<BR>";
+
+$alphabetORnumber  = 1;
+if ( $alphabet != "alpha")$alphabetORnumber  = 0;
+
+if ( ($year < 2013) || ( $year > 2017)) {
+	echo "Sorry, no swatches for year".$year;
+	$year = 2017;
+	echo " Showing swatches of year ".$year ."<BR><BR>";
+}
+
+echo " <CENTER><B>Swatches Word Count analysis ".$year."</B></CENTER>";
+
+wordFrequency($urlArray, $year, $alphabetORnumber );
+
+function wordFrequency($urlArray, $year, $alphabetORnumber )
+{
+	
+	
+$numberOfSwatches = 24;
+if ( $year == 2014) $numberOfSwatches = 20;
+if ( $year == 2015) $numberOfSwatches = 29;
+
+
+
+$url2017 = "http://etextile-summercamp.org/swatch-exchange/category/".$year."/";
+$html2017 = file_get_contents( $url2017 );
+
+ 
+
+$start1 = 37 + strpos($html2017 , "excerpt-title", 0 );
+$start2 = -2 + strpos($html2017 , "rel=", $start1  );
+$urlArray[0] =  "http://".substr($html2017, $start1 ,  $start2 - $start1 );
+//echo  ($urlArray[0])."<BR>";
+
+for ( $t = 1; $t<$numberOfSwatches;$t++){
+$start1 = 37 + strpos($html2017 , "excerpt-title", $start2 - 30 );
+$start2 = -2 + strpos($html2017 , "rel=", $start1  );
+
+$urlArray[$t] =  "http://".substr($html2017, $start1 ,  $start2 - $start1 );
+//echo  "<a href=".$urlArray[$t].">".$urlArray[$t]."</a>"."<BR>";
+}
+  
+// Get all the html on a page
+	$html = "";
+	$htmlArray = [];
+	$htmlWordArray = [];
+	$titleArray = [];
+	
+ 
+
+	for ( $u = 0; $u < count( $urlArray ); $u++)
+		{
+			$htmlArray[$u] = strtolower(file_get_contents($urlArray[$u] ));
+			$startP = 15 + strpos($htmlArray[$u] , "excerpt-title", 0 );
+			//echo $startP."  + ";
+			$startE = 17+ strpos($htmlArray[$u] , "post-page-content", 0 );
+			//echo $startE."  - ";
+			$startC = strpos($htmlArray[$u] , "comments", 0 );
+			//echo $startC."  - ";
+			$nameTestString = strip_tags( strtolower($htmlArray[$u]));
+			$startNameAuthor = 8 + strpos($nameTestString , "credit", 0 );
+			$startNameAuthorSpace1 = 1+strpos($nameTestString , " ", $startNameAuthor );
+			$startNameAuthorSpace2 = 1 +strpos($nameTestString , " ", $startNameAuthorSpace1 );
+			
+			$authorArray = str_word_count( substr($nameTestString, $startNameAuthor, $startNameAuthorSpace2 - $startNameAuthor + 20), 1);
+			
+			
+			if ($authorArray[0] == "beam" ){$authorArray[1] = ""; }
+			if ($authorArray[0] == "sasha" ){$authorArray[1] = "de Koninck"; }
+			if ($authorArray[0] == "ricardo" ){$authorArray[1] = "O’Nascimento"; }
+			if ($authorArray[0] == "martin" ){$authorArray[1] = "de Bie"; }
+			
+			$authors[$u] = $authorArray[0]." ".$authorArray[1];
+			if ( $authors[$u]== "e-textile swatch") $authors[$u] = "Pauline Vierne";
+			//if ( (strpos($urlArray[$u], "bitlace")>-1) && ($year==2014) ) $authors[$u] = "Hannah Perner-Wilson";
+			
+			if ( (strpos($urlArray[$u], "bitlace")>-1)) {
+	
+				$authors[$u] = "Hannah Perner-Wilson";
+				
+			}
+				
+		$html .= strip_tags(substr($htmlArray[$u], $startE, $startE - $startC));//reducing to the real post text
+		$htmlArray[$u] = strip_tags(substr($htmlArray[$u], $startE, $startE - $startC));
+		
+		$htmlWordArray[$u] = str_word_count($htmlArray[$u],1);
+
+		$titleArray[$u] = substr($htmlArray[$u], $startP, $startE - $startP);
+		
+		//echo "<a href=".$urlArray[$u].">".$authors[$u]."</a>"." ";
+		//echo ($u+1)." ".strip_tags($titleArray[$u])." - author : "."<a href=".$urlArray[$u].">".$authors[$u]."</a>". "<BR>";
+		
+		
+		}
+		
+
+	
+	 
+// Get an array of all the words
+$allWordsArray = str_word_count( strip_tags($html), 1);
+
+$totalAllWordsArray = count($allWordsArray);
+
+// Get the amount of times a word appears on the page
+$wordCount = array_count_values($allWordsArray);
+
+//$wordCount = array_count_values(array_map('strtolower', $wordCount));
+
+arsort($wordCount);
+
+//$alphabetSortWords = sort( $wordCount);
+
+// Get the top 20 words
+$wordCount = array_splice($wordCount, 0, 100);
+ 
+// Loop through all the word count array and work out the percentage of a word appearing on the page
+$percentageCount = [];
+
+$notWords = ["should", "important", "which", "References", "Description", "Techniques", "Inspirations", "Credits", "between",
+"Dimensions", "through", "etextile-summercamp", "other", "function", "about", "Title.", "swatch-exchange", "https", "required", "credits", "comment",
+"posting", "reply", "techniques", "description", "dimensions", "leave", "shown", "email", "different", "where", "using","website", "references", "inspirations"];
+$allowedWords = ["Beam", "Becca", "led", "smd", "ic", "chip", "cap", "ldr"];
+
+if ( $alphabetORnumber == 1){
+	echo "<BR>";
+	echo "Most used words in alphabetical order<BR>";
+	echo "<BR>";
+}else{
+	echo "<BR>";
+	echo "Words in order of most used<BR>";
+	echo "<BR>";	
+}
+
+$wordArrayWithAuthors = [];
+
+$counterWords = 0;
+foreach($wordCount as $words => $val)
+{
+	
+	
+	$stop = 0;
+	if ( strlen($words )< 5 )
+	{
+		$stop = 1;
+	}
+	for ( $i = 0; $i < count($notWords); $i++){
+		if ($words == $notWords[$i] )
+		{ 
+		$stop = 1;}
+	}
+	for ( $i = 0; $i < count($allowedWords); $i++){
+		if ($words == $allowedWords[$i] )
+		{ 
+		$stop = 0;}
+	}
+	 
+	if ( $stop == 0){
+		$wordArrayWithAuthors[$counterWords][0] = $words;
+		$wordArrayWithAuthors[$counterWords][1] = $val;
+	//echo $counterWords." #:".$val." <B>".$words."</B>. source ";
+
+	$authorVal = "";
+	for ( $t = 0; $t < count( $htmlWordArray); $t++){
+		  
+		if( in_array($words, $htmlWordArray[$t])){ 
+			$authorVal .= "<a href=".$urlArray[$t].">".$authors[$t]."</a>".", ";
+		 }
+	}
+	//echo $authorVal;
+	$wordArrayWithAuthors[$counterWords][2] = $authorVal;
+	$counterWords++;
+	//echo "<BR>"; 
+	}
+}
+echo "<HR>";
+
+//in number order of alphabetical order
+if ( $alphabetORnumber == 1) asort($wordArrayWithAuthors);
+
+echo "<HR>";
+		echo "<TABLE>";
+		echo "<TR><TD>nr</TD><TD><B>words<B></TD><TD>#</TD><TD>";
+echo "<B>author - links -source</TD>";
+
+echo "</TR>";
+$counterWords = 0;
+foreach($wordArrayWithAuthors as $words)
+{
+	echo "<TD>".($counterWords++)." </TD><td bgcolor='#005500'><B>".$words[0]."</B></TD><TD>".$words[1]." </TD><td bgcolor='#005500'>".$words[2]."</TD></TR><TR>";
+}
+
+echo "</TR><TABLE>";
+
+//------------------------------------titles links authors
+echo "<HR>";
+		echo "<TABLE>";
+		echo "<TR><TD>";
+echo "<B>swatch link";
+echo "</TD><TD>";
+echo "<B>author";
+
+echo "</TD></TR>";
+		
+		for ($x=0; $x< count($urlArray);$x++){
+echo "<TR><TD>";
+echo "<a href=".$urlArray[$x].">".$urlArray[$x]."</a>";
+echo "</TD><TD>";
+echo strip_tags($titleArray[$x])." "."<a href=".$urlArray[$x].">".$authors[$x]."</a>";
+		}
+echo "</TD></TR><TABLE>";
+
+}
+	
+?>
+
+
+
+
+
