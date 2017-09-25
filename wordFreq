@@ -34,7 +34,7 @@ table {
     margin: 0 auto;
     max-height: 80%;
     max-width: 80%;
-  border: 1px solid #000000;
+  border: 0px solid #000000;
 }
 
 #centerImageWidth {
@@ -65,6 +65,9 @@ div {
 <BR>
 <TABLE>
 <TR><TD>
+
+<TABLE width='500' border='0'>
+<TR><TD>
 Year of Swatches      : </TD><TD>
 <input type="text" name="year"></TD>
 </TR><TR><TD>
@@ -76,6 +79,8 @@ Way to order <BR>("alpha" for alphabetical]:</TD><TD>
 </TD>
 </TR></TABLE>
 </form>
+</TD><TD>
+
 
 <BR>
 </body>
@@ -89,19 +94,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	$year = htmlspecialchars($_POST["year"]);
 	$alphabet = htmlspecialchars($_POST["order"]);
 }
-echo "<TABLE><TR><TD>";
-echo "Submitted parameters: year= ".$year."    order= ".$alphabet."<BR>";
 
+echo "<TABLE width='500' border='0'><TR><TD>";
+echo "Submitted parameters:<BR> year= ".$year."    order= ".$alphabet."<BR>";
 $alphabetORnumber  = 1;
 if ( $alphabet != "alpha")$alphabetORnumber  = 0;
 
 if ( ($year < 2013) || ( $year > 2017)) {
 	echo "Sorry, no swatches for year".$year;
 	$year = 2017;
-	echo " Showing swatches of year ".$year ."<BR><BR>";
+	echo "<BR>Showing swatches of year ".$year;
 }
 echo "</TD></TR></TABLE>";
-echo "<BR>";
+echo "<BR><BR>";
+echo "</TD></TR></TABLE>";
+
+echo "<BR><BR>";
 echo "<TABLE><TR><TD>";
 echo " <CENTER><B>Swatches Word Count analysis ".$year."</B></CENTER>";
 echo "</TD></TR></TABLE>";
@@ -140,7 +148,7 @@ $urlArray[$t] =  "http://".substr($html2017, $start1 ,  $start2 - $start1 );
 	$htmlArray = [];
 	$htmlWordArray = [];
 	$titleArray = [];
-	
+	$swatchTitleArray = [];
  
 
 	for ( $u = 0; $u < count( $urlArray ); $u++)
@@ -159,7 +167,14 @@ $urlArray[$t] =  "http://".substr($html2017, $start1 ,  $start2 - $start1 );
 			
 			$authorArray = str_word_count( substr($nameTestString, $startNameAuthor, $startNameAuthorSpace2 - $startNameAuthor + 20), 1);
 			
+			//swatch name digging
+			$startSwatchTitle = 10 + strpos($htmlArray[$u] , "bookmark", $startP -25);
+			$startSwatchTitleEND =  0 + strpos($htmlArray[$u] , "</a>", $startSwatchTitle );
+			$swatchTitleArray[$u] = substr($htmlArray[$u], $startSwatchTitle, $startSwatchTitleEND-$startSwatchTitle);
+			//echo $swatchTitleArray[$u] ."<BR>";
 			
+			
+			//special cases of names
 			if ($authorArray[0] == "beam" ){$authorArray[1] = ""; }
 			if ($authorArray[0] == "sasha" ){$authorArray[1] = "de Koninck"; }
 			if ($authorArray[0] == "ricardo" ){$authorArray[1] = "O’Nascimento"; }
@@ -170,9 +185,7 @@ $urlArray[$t] =  "http://".substr($html2017, $start1 ,  $start2 - $start1 );
 			//if ( (strpos($urlArray[$u], "bitlace")>-1) && ($year==2014) ) $authors[$u] = "Hannah Perner-Wilson";
 			
 			if ( (strpos($urlArray[$u], "bitlace")>-1)) {
-	
 				$authors[$u] = "Hannah Perner-Wilson";
-				
 			}
 				
 		$html .= strip_tags(substr($htmlArray[$u], $startE, $startE - $startC));//reducing to the real post text
@@ -216,16 +229,16 @@ $notWords = ["should", "important", "which", "References", "Description", "Techn
 "posting", "reply", "techniques", "description", "dimensions", "leave", "shown", "email", "different", "where", "using","website", "references", "inspirations"];
 $allowedWords = ["Beam", "Becca", "led", "smd", "ic", "chip", "cap", "ldr"];
 
-echo "<BR><TABLE><TR><TD>";
+echo "<BR><TABLE><TR  bgcolor='#bbffbb'><TD>";
 
 if ( $alphabetORnumber == 1){
-	echo "<BR>";
+ 
 	echo "Most used words in alphabetical order<BR>";
-	echo "<BR>";
+ 
 }else{
-	echo "<BR>";
+	 
 	echo "Words in order of most used<BR>";
-	echo "<BR>";	
+ 	
 }
 echo "</TD></TR></TABLE>";
 
@@ -278,14 +291,14 @@ if ( $alphabetORnumber == 1) asort($wordArrayWithAuthors);
 
  
 		echo "<TABLE>";
-		echo "<TR><TD>nr</TD><TD><B>words<B></TD><TD>#</TD><TD>";
-echo "<B>author - links -source</TD>";
+		echo "<TR  bgcolor='#99ff99'><TD><H4><CENTER>nr</TD><TD><B><H3><CENTER>words<B></TD><TD><H3>#</TD><TD>";
+echo "<H3><CENTER>author - links -source</TD>";
 
 echo "</TR>";
 $counterWords = 0;
 foreach($wordArrayWithAuthors as $words)
 {
-	echo "<TD bgcolor='#aaffff'>".($counterWords++)." </TD><td bgcolor='#aaffaa'><B>".$words[0]."</B></TD><TD bgcolor='#aaffff'>".$words[1]." </TD><td bgcolor='#aaffaa'>".$words[2]."</TD></TR><TR>";
+	echo "<TD bgcolor='#aaffff'>".(1+$counterWords++)." </TD><td bgcolor='#aaffaa'><B>".$words[0]."</B></TD><TD bgcolor='#aaffff'>".$words[1]." </TD><td bgcolor='#aaffaa'>".$words[2]."</TD></TR><TR>";
 }
 
 echo "</TR></TABLE>";
@@ -293,21 +306,26 @@ echo "</TR></TABLE>";
 //------------------------------------titles links authors
 echo "<HR>";
 		echo "<TABLE>";
-		echo "<TR><TD>";
-echo "<B>swatch link";
+		echo "<TR  bgcolor='#99ff99'><TD>";
+echo "<H3><CENTER>swatch link name";
 echo "</TD><TD>";
-echo "<B>author";
-
+echo "<H3><CENTER>swatch name";
+echo "</TD><TD>";
+echo "<H3><CENTER>author";
 echo "</TD></TR>";
 		
 		for ($x=0; $x< count($urlArray);$x++){
 echo "<TR><TD>";
 echo "<a href=".$urlArray[$x].">".$urlArray[$x]."</a>";
-echo "</TD><TD>";
+echo "</TD><TD bgcolor='#aaffaa'>";
+
+echo $swatchTitleArray[$x];
+
+echo "</TD><TD bgcolor='#aaffaa'>";
 echo strip_tags($titleArray[$x])." "."<a href=".$urlArray[$x].">".$authors[$x]."</a>";
 		}
 echo "</TD></TR><TABLE>";
-
+echo "<BR><BR><HR>";
 }
 	
 ?>
